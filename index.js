@@ -764,106 +764,103 @@ alextube.prototype.processResult = function (partnumber, enqueue, offset) {
     var url = results[currentresult].id;
     var foundTitle = results[currentresult].title;
     var playFunction = this;
-    var audioStreamInfo = ytdl.getInfo(url, { filter: function(format) { return format.container === 'm4a'; } }, function (err,info){
-        console.log(info)
-        var contentduration = info.length_seconds
-        settings.tracksettings[currentresult].duration = contentduration
-        console.log ('Duration is ', contentduration)
-        
-        // ignore contetn lobger than 7 hours as the Lambda function will run out of space!!!
-        if (contentduration > 60*60*7){
-            
-            console.log('Audio longer than 7 hours - for track', currentresult)
-            settings.playlist[currentresult] = settings.playlist[currentresult] + 'TRACK TOO LONG TO PLAY!'
-            playFunction.nextResult();
-
-            
-        } else if (contentduration = 0){
-            
-            console.log('Audio not found', currentresult)
-            settings.playlist[currentresult] = settings.playlist[currentresult] + 'TRACK NOT PLAYABLE!'
-            playFunction.nextResult();
-
-            
-        } else {
-         var parts = Math.ceil(contentduration / partsize)
-        settings.tracksettings[currentresult].parts = parts
-        console.log ('Number of parts is ', parts)
-        if (!partnumber ){
-            partnumber = 0
-        } 
-        
-        else if (partnumber > (parts-1) || partnumber < 0){
-            console.log('Part number invalid')
-            partnumber = 0
+    
+    var response = {
+        version: "1.0",
+        "sessionAttributes": {},
+        response: {
+            "outputSpeech": {
+              "type": "PlainText",
+              "text": "ok",
+            },
+            "card": {
+              "type": "Standard",
+              "title": "title",
+              "text": "text"
+            },
+            "shouldEndSession": true
         }
         
-        console.log('Part to be processed is ', partnumber)
-        settings.tracksettings[currentresult].currentpart = partnumber
+    };
+    
+    
+    
+    
+    
+    var audioStreamInfo = ytdl.getInfo(url, { filter: function(format) { return format.container === 'mp4'; } }, function (err,info){
+        //console.log(JSON.stringify(info))
+        
+        var vids = info.formats
+        
+        console.log(JSON.stringify(vids))
+        
+        var vidurl
+        var response = {}
+    
+        for (var count = 0; count <= vids.length-1; count++) {
+            
+            console.log('Itag', vids[count].itag)
+        
+        if (vids[count].itag == "1"){
+            console.log('22 detected')
+            vidurl=vids[count].url
+            } else if (vids[count].itag == "135"){
+            console.log('135 detected')
+            vidurl=vids[count].url
+            }else if (vids[count].itag == "1"){
+                console.log('134 detected')
+            
+            vidurl=vids[count].url
+            }
+            
+            
+            
+            
+            
+            response = {
+            version: "1.0",
+                sessionAttributes: {},
+                response: {
+               outputSpeech: null,
+               card: null,
+               directives: [
+                {
+                    type: "VideoApp.Launch",
+                    videoItem:
+                    {
+                        source: vidurl,
+                       metadata: {
+                            title: "Title for Sample Video",
+                            subtitle: "Secondary Title for Sample Video"              
+                       }
+                    }
+               }    
+                ],
+                reprompt: null
+               }
+            
+            
+            
+            
+        }
         
         
-        var starttime = partsize * partnumber
         
-        
-        console.log ('start secs ', starttime)
-        
-            ytdl(url, { filter: format => {
-              return format.container === 'm4a';  } })
-              // Write audio to file since ffmpeg supports only one input stream.
-              .pipe(fs.createWriteStream(audioOutput))
+        }
 
-              .on('finish', () => {
-                
-                var test = ffmpeg()
-              //  .input(ytdl(url, { filter: format => {
-              //    return format.container === 'm4a';  } }))
-                  //.videoCodec('copy')
-                  .input(audioOutput)
-                .inputFormat('m4a')
-                    .seekInput(starttime)
-                .duration(partsize)
-                  .audioCodec('copy')
-                .outputOptions('-movflags faststart')
-                  .save(mainOutput)
-                  .on('error', console.error)
-                    .on('end', () => {
-                    fs.unlink(audioOutput, err => {
-                      if(err) console.error(err);
-                        
-                        
-                        
-                        var stats = fs.statSync(mainOutput)
-                        var fileSizeInBytes = stats.size
-                        var overalldata = settings.dataused + fileSizeInBytes
-                        console.log('Max data usage setting in GB ', settings.maxdata/1000000.0)
-                        console.log('Current data usage in GB ', settings.dataused/1000000.0)
-                        console.log('Data usage following this song in GB ', overalldata/1000000.0)
-                        
-                        if (overalldata >= settings.maxdata){
-                            
-                            
-                            playFunction.speakWithCard('Maximum monthly data usage reached', 'WARNING', 'Maximum monthly data usage reached')
-                            
-                            
-                        } else {
-                            
-                            settings.dataused = overalldata;
-
-                        playFunction.upload(enqueue, offset);
-                        
-                        }
-               
-                        
-                    });
-                  });
-               //     test.pipe(dropboxUploadStream);
-             
-              });
+        
+        
+    playFunction.context.succeed(response);
+        
+        
+        
+            
+            
             
             
         }
  
-    })
+    )
     
 };
 
