@@ -132,8 +132,18 @@ var handlers = {
     
     'PlaybackFailed' : function() {
     	console.log('Alexa encounters an error when attempting to play a stream');
-        //this.response.speak('I could not play that video')
-        //this.emit(':responseReady');
+        
+        var previousItem = currentItem
+        
+        if (previousItem == videoPlaylist.length -1) {
+            console.log('End of playlist reached')
+
+        } else {
+            currentItem++
+            currentOffset = 0
+            playVideoURL(this, videoPlaylist[currentItem].link, currentItem, null, currentOffset, 'REPLACE_ALL') 
+        } 
+        
     },
     
    
