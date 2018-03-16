@@ -1,0 +1,116 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "youtube",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PauseIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ResumeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.MoreIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateSettingsIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NextIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PageUpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PageDownIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PreviousIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollRightIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollDownIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollLeftIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollUpIntent",
+          "samples": []
+        },
+        {
+          "name": "SearchIntent",
+          "slots": [
+            {
+              "name": "searchID",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "play me some {searchID}",
+            "play some {searchID}",
+            "find {searchID}",
+            "play {searchID}"
+          ]
+        },
+        {
+          "name": "ChannelIntent",
+          "slots": [
+            {
+              "name": "channelID",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "search for a channel called {channelID}",
+            "find the channel {channelID}",
+            "find a channel called {channelID}"
+          ]
+        },
+        {
+          "name": "NumberIntent",
+          "slots": [
+            {
+              "name": "numberID",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "selected number {numberID}",
+            "play track number {numberID}",
+            "play track {numberID}"
+          ]
+        }
+      ]
+    }
+  }
+}
